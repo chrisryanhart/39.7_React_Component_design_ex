@@ -28,21 +28,44 @@ import "./Board.css";
  **/
 
 function Board({ nrows, ncols, chanceLightStartsOn }) {
+  const createCell = () => {
+    let randomNum = Math.floor(Math.random()*2);
+    let cellVal = randomNum === 1 ? true : false;
+    return cellVal;
+  }
+  
   const [board, setBoard] = useState(createBoard());
+  let winMessage = {display: "none"};
+  let boardStatus = {display: "flexbox"};
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
     let initialBoard = [];
+
+    for (let i =0; i< nrows; i++){
+      let row = [];
+      for (let j=0; j<ncols; j++){
+        let value = createCell();
+        row.push(value);
+
+        if (row.length === ncols) {
+          initialBoard.push(row);
+        }
+      }
+    }
+
     // TODO: create array-of-arrays of true/false values
     return initialBoard;
   }
 
   function hasWon() {
-    // TODO: check the board in state to determine whether the player has won.
+
   }
 
   function flipCellsAround(coord) {
+    // event.persist();
     setBoard(oldBoard => {
+      // let coord = event.currentTarget.attributes.coord.value;
       const [y, x] = coord.split("-").map(Number);
 
       const flipCell = (y, x, boardCopy) => {
@@ -53,21 +76,57 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
         }
       };
 
+
       // TODO: Make a (deep) copy of the oldBoard
+      const boardCopy = oldBoard.map(row => [...row]);
 
       // TODO: in the copy, flip this cell and the cells around it
+      flipCell(y,x,boardCopy);
+      flipCell(y+1,x,boardCopy);
+      flipCell(y-1,x,boardCopy);
+      flipCell(y,x+1,boardCopy);
+      flipCell(y,x-1,boardCopy);
+      console.log('test');
 
       // TODO: return the copy
+      return boardCopy;
     });
   }
 
-  // if the game is won, just show a winning msg & render nothing else
+  function hasWon(board){
+    // TODO: check the board in state to determine whether the player has won.
+
+    const gameStatus = board.map(row => row.find(ele => ele === false));
+
+    if (!gameStatus.includes(false)){
+      console.log('you won!');
+
+      winMessage.display = 'block';
+      boardStatus.display = 'none';
+    }
+  }
+
+  hasWon(board);
 
   // TODO
 
   // make table board
+  // map cells 
 
-  // TODO
+  return (<>
+            <h1 style={winMessage}>You won!</h1>
+            <table style={boardStatus}>
+              <tbody>
+                  {board.map((arr,y) => {
+                      return (<tr>
+                          {arr.map((ele,x) => <Cell coord={y + `-`+ x} isLit={ele} flipCellsAroundMe={flipCellsAround} />)}
+                      </tr>);
+                    })
+                  }
+              </tbody>
+            </table>
+          </>);
 }
+
 
 export default Board;
