@@ -58,9 +58,6 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     return initialBoard;
   }
 
-  function hasWon() {
-
-  }
 
   function flipCellsAround(coord) {
     // event.persist();
@@ -118,11 +115,15 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
             <table style={boardStatus}>
               <tbody>
                   {board.map((arr,y) => {
-                      return (<tr>
-                          {arr.map((ele,x) => <Cell coord={y + `-`+ x} isLit={ele} flipCellsAroundMe={flipCellsAround} />)}
+                      return (<tr key={y}>
+                          {arr.map((ele,x) => {
+                              let coord = `${y}-${x}`;
+                              return (
+                                <Cell key={coord} isLit={ele} flipCellsAroundMe={() => flipCellsAround(coord)} />
+                              );
+                        })}
                       </tr>);
-                    })
-                  }
+                    })}
               </tbody>
             </table>
           </>);
